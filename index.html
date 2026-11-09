@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f6b5c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NCR 506">
+<title>حاسبة خصم NCR</title>
+<style>
+:root{--bg:#f2f4f6;--card:#fff;--ink:#16202a;--muted:#5d6b78;--line:#e3e8ec;--accent:#0f6b5c;--accent-soft:#e3f2ef;--bad:#c0281b;--bad-soft:#fdecea;--warn:#9a6700;--warn-soft:#fff4d6;--pen:#7a3db8;--bar:#0f6b5c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1215;--card:#172026;--ink:#e8eef2;--muted:#97a6b2;--line:#273139;--accent:#4cc3a8;--accent-soft:#132c26;--bad:#ff8a7a;--bad-soft:#36191a;--warn:#f2c14e;--warn-soft:#30270f;--pen:#c49bf5;--bar:#11463d}}
+:root[data-theme="dark"]{--bg:#0d1215;--card:#172026;--ink:#e8eef2;--muted:#97a6b2;--line:#273139;--accent:#4cc3a8;--accent-soft:#132c26;--bad:#ff8a7a;--bad-soft:#36191a;--warn:#f2c14e;--warn-soft:#30270f;--pen:#c49bf5;--bar:#11463d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.4;padding-bottom:calc(132px + env(safe-area-inset-bottom))}
+.wrap{max-width:640px;margin:0 auto;padding:14px 12px 8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+h1{font-size:18px;margin:0}
+.period{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.toast{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:13px}
+.hint{color:var(--muted);font-size:12px;margin:0 2px 8px}
+
+/* قائمة المؤشرات: صف قصير لكل مؤشر */
+.list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pi{border-top:1px solid var(--line)}
+.pi:first-child{border-top:0}
+.row{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 8px;min-height:60px}
+.code{flex:none;width:46px;height:30px;border-radius:8px;background:var(--bg);color:var(--ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.pi.hit .code{background:var(--bad);color:#fff}
+.pi.near .code{background:var(--warn-soft);color:var(--warn)}
+.name{flex:1;min-width:0;border:0;background:none;color:inherit;text-align:right;padding:4px 0;cursor:pointer;font:inherit}
+.name b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.name span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi.hit .name span{color:var(--bad);font-weight:600}
+.step{flex:none;display:flex;align-items:center;direction:ltr;gap:4px}
+.step button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:22px;line-height:1;cursor:pointer;touch-action:manipulation}
+.step button:active{background:var(--accent-soft)}
+.step input{width:52px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-size:19px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums;-moz-appearance:textfield;padding:0}
+.step input::-webkit-inner-spin-button,.step input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+/* تفاصيل المؤشر عند الضغط على اسمه */
+.det{display:none;padding:0 12px 12px 12px;font-size:13px}
+.pi.open .det{display:block}
+.box{background:var(--bg);border-radius:10px;padding:8px 10px}
+.line{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.line .v{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.line.ded .v{color:var(--bad)}.line.pen .v{color:var(--pen)}
+.line.sum{border-top:1px solid var(--line);margin-top:4px;padding-top:6px;font-size:14px}
+.why{color:var(--muted);font-size:12px;margin-top:6px}
+.opt{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted)}
+.opt select{flex:1;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:14px;padding:0 8px}
+.opt input{width:72px;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);text-align:center;font-size:16px}
+
+/* أدوات */
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.btn{min-height:48px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 12px;border-radius:12px;font-size:15px;cursor:pointer}
+.btn.primary{grid-column:1/-1;background:var(--accent);color:#fff;border-color:transparent;font-weight:600}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px}
+summary{padding:14px;font-weight:600;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▾";float:left;color:var(--muted)}
+details[open] summary::after{content:"▴"}
+.body{padding:0 14px 14px;font-size:13px}
+.f{background:var(--bg);border-radius:10px;padding:10px 12px;margin:8px 0;line-height:1.8}
+.f code{font-family:inherit;font-weight:700;color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 3px;border-bottom:1px solid var(--line);text-align:center}
+th{color:var(--muted);font-weight:600}
+td:first-child,th:first-child{text-align:right}
+.hrow{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.hrow:first-child{border-top:0}
+.hrow small{display:block;color:var(--muted);font-size:11px}
+.hrow .v{text-align:left;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.note{color:var(--muted);font-size:12px;line-height:1.8;margin:4px 2px}
+
+/* شريط الإجمالي أسفل الشاشة (منطقة الإبهام) */
+.bar{position:fixed;inset:auto 0 0 0;z-index:10;background:var(--bar);color:#fff;padding:10px 14px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.18)}
+.bar .in{max-width:640px;margin:0 auto}
+.bar .t1{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.bar .lbl{font-size:12px;opacity:.9}
+.bar .amt{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar .split{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px}
+.bar .split div{background:rgba(255,255,255,.14);border-radius:9px;padding:4px 8px}
+.bar .split b{display:block;font-size:14px;font-variant-numeric:tabular-nums}
+.bar .split span{font-size:11px;opacity:.9}
+.bar .meta{font-size:11px;opacity:.85;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>حاسبة NCR — عقد 506</h1>
+    <span class="period" id="period"></span>
+  </header>
+  <div class="toast" id="toast" hidden></div>
+  
+  <div class="list" id="list"></div>
+
+  <div class="tools">
+    <button id="lock" type="button" class="btn primary">تثبيت عدد الشهر وبدء الشهر القادم</button>
+    <button id="fromApp" type="button" class="btn">أرقام الواجهة</button>
+    <button id="reset" type="button" class="btn">تصفير</button>
+  </div>
+
+  <details id="histbox" hidden>
+    <summary>الأشهر المثبّتة</summary>
+    <div class="body" id="hist"></div>
+  </details>
+
+</div>
+
+<div class="bar" aria-live="polite">
+  <div class="in">
+    <div class="t1"><span class="lbl">إجمالي ما يُحسم هذا الشهر</span><span class="amt" id="tot">0</span></div>
+    <div class="split">
+      <div><b id="tDed">0</b><span>خصم NCR</span></div>
+      <div><b id="tPen">0</b><span>غرامات التكرار</span></div>
+    </div>
+    <div class="meta" id="totmeta"></div>
+  </div>
+</div>
+
+<script>
+const D = {"cur": {"5.13": 19, "1.4": 23, "5.3": 15, "2.2": 13, "5.7": 11, "5.8": 8, "5.11": 7, "5.4": 7, "5.10": 4, "1.5": 2}, "cur_period": {"y": 2026, "m": 9}, "cur_at": "2026-11-09 12:09", "app_total": 34325.31, "lump": 868995.2, "min": 0.7, "base": {"1.4": 4, "5.3": 4, "5.4": 4, "5.7": 4, "5.13": 3, "5.8": 1, "5.11": 1}, "base_note": "آخر بطاقة معتمدة", "pis": [{"code": "1.1", "name": "جودة إدارة المتعاقد", "weight": 0.025, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2715.61, 3258.73, 3801.85, 4344.98, 4888.1, 5431.22, 5974.34, 6517.46, 7060.59, 7603.71, 8146.83, 8689.95, 9233.07, 9776.2, 10319.32, 10862.44, 11405.56, 11948.68, 12491.81, 13034.93, 13578.05, 14121.17, 14664.29, 15207.42, 15750.54, 16293.66, 16836.78, 17379.9, 17923.03, 18466.15, 19009.27, 19552.39, 20095.51, 20638.64, 21181.76, 21724.88, 21724.88]}, {"code": "1.2", "name": "التدقيق الإداري", "weight": 0.03, "rate": 0.03, "allowed": 9, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3258.73, 4236.35, 5213.97, 6191.59, 7169.21, 8146.83, 9124.45, 10102.07, 11079.69, 12057.31, 13034.93, 14012.55, 14990.17, 15967.79, 16945.41, 17923.03, 18900.65, 19878.27, 20855.88, 21833.5, 22811.12, 23788.74, 24766.36, 25743.98, 26069.86]}, {"code": "1.4", "name": "فحص وإدارة الأصول", "weight": 0.025, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2715.61, 3258.73, 3801.85, 4344.98, 4888.1, 5431.22, 5974.34, 6517.46, 7060.59, 7603.71, 8146.83, 8689.95, 9233.07, 9776.2, 10319.32, 10862.44, 11405.56, 11948.68, 12491.81, 13034.93, 13578.05, 14121.17, 14664.29, 15207.42, 15750.54, 16293.66, 16836.78, 17379.9, 17923.03, 18466.15, 19009.27, 19552.39, 20095.51, 20638.64, 21181.76, 21724.88, 21724.88]}, {"code": "1.5", "name": "التعاون", "weight": 0.035, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3801.85, 4562.22, 5322.6, 6082.97, 6843.34, 7603.71, 8364.08, 9124.45, 9884.82, 10645.19, 11405.56, 12165.93, 12926.3, 13686.67, 14447.05, 15207.42, 15967.79, 16728.16, 17488.53, 18248.9, 19009.27, 19769.64, 20530.01, 21290.38, 22050.75, 22811.12, 23571.49, 24331.87, 25092.24, 25852.61, 26612.98, 27373.35, 28133.72, 28894.09, 29654.46, 30414.83, 30414.83]}, {"code": "2.2", "name": "التقييد بمتطلبات السلامة", "weight": 0.065, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7060.59, 8472.7, 9884.82, 11296.94, 12709.05, 14121.17, 15533.29, 16945.41, 18357.52, 19769.64, 21181.76, 22593.88, 24005.99, 25418.11, 26830.23, 28242.34, 29654.46, 31066.58, 32478.7, 33890.81, 35302.93, 36715.05, 38127.16, 39539.28, 40951.4, 42363.52, 43775.63, 45187.75, 46599.87, 48011.98, 49424.1, 50836.22, 52248.34, 53660.45, 55072.57, 56484.69, 56484.69]}, {"code": "3.2", "name": "الاستجابة للظروف المناخية والطوارئ", "weight": 0.02, "rate": 0.05, "allowed": 5, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2172.49, 3258.73, 4344.98, 5431.22, 6517.46, 7603.71, 8689.95, 9776.2, 10862.44, 11948.68, 13034.93, 14121.17, 15207.42, 16293.66, 17379.9, 17379.9]}, {"code": "3.3", "name": "تقديم الخدمة والموارد الثانوية", "weight": 0.04, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 10000, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4344.98, 5213.97, 6082.97, 6951.96, 7820.96, 8689.95, 9558.95, 10427.94, 11296.94, 12165.93, 13034.93, 13903.92, 14772.92, 15641.91, 16510.91, 17379.9, 18248.9, 19117.89, 19986.89, 20855.88, 21724.88, 22593.88, 23462.87, 24331.87, 25200.86, 26069.86, 26938.85, 27807.85, 28676.84, 29545.84, 30414.83, 31283.83, 32152.82, 33021.82, 33890.81, 34759.81, 34759.81]}, {"code": "5.2", "name": "جودة ومطابقة المواد (روتينية)", "weight": 0.02, "rate": 0.05, "allowed": 5, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2172.49, 3258.73, 4344.98, 5431.22, 6517.46, 7603.71, 8689.95, 9776.2, 10862.44, 11948.68, 13034.93, 14121.17, 15207.42, 16293.66, 17379.9, 17379.9]}, {"code": "5.3", "name": "سطح الرصف والحواف", "weight": 0.035, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3801.85, 4562.22, 5322.6, 6082.97, 6843.34, 7603.71, 8364.08, 9124.45, 9884.82, 10645.19, 11405.56, 12165.93, 12926.3, 13686.67, 14447.05, 15207.42, 15967.79, 16728.16, 17488.53, 18248.9, 19009.27, 19769.64, 20530.01, 21290.38, 22050.75, 22811.12, 23571.49, 24331.87, 25092.24, 25852.61, 26612.98, 27373.35, 28133.72, 28894.09, 29654.46, 30414.83, 30414.83]}, {"code": "5.4", "name": "المنشآت", "weight": 0.04, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4344.98, 5213.97, 6082.97, 6951.96, 7820.96, 8689.95, 9558.95, 10427.94, 11296.94, 12165.93, 13034.93, 13903.92, 14772.92, 15641.91, 16510.91, 17379.9, 18248.9, 19117.89, 19986.89, 20855.88, 21724.88, 22593.88, 23462.87, 24331.87, 25200.86, 26069.86, 26938.85, 27807.85, 28676.84, 29545.84, 30414.83, 31283.83, 32152.82, 33021.82, 33890.81, 34759.81, 34759.81]}, {"code": "5.5", "name": "تصريف المياه", "weight": 0.03, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3258.73, 3910.48, 4562.22, 5213.97, 5865.72, 6517.46, 7169.21, 7820.96, 8472.7, 9124.45, 9776.2, 10427.94, 11079.69, 11731.44, 12383.18, 13034.93, 13686.67, 14338.42, 14990.17, 15641.91, 16293.66, 16945.41, 17597.15, 18248.9, 18900.65, 19552.39, 20204.14, 20855.88, 21507.63, 22159.38, 22811.12, 23462.87, 24114.62, 24766.36, 25418.11, 26069.86, 26069.86]}, {"code": "5.6", "name": "الأصول الجيوتقنية", "weight": 0.03, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3258.73, 3910.48, 4562.22, 5213.97, 5865.72, 6517.46, 7169.21, 7820.96, 8472.7, 9124.45, 9776.2, 10427.94, 11079.69, 11731.44, 12383.18, 13034.93, 13686.67, 14338.42, 14990.17, 15641.91, 16293.66, 16945.41, 17597.15, 18248.9, 18900.65, 19552.39, 20204.14, 20855.88, 21507.63, 22159.38, 22811.12, 23462.87, 24114.62, 24766.36, 25418.11, 26069.86, 26069.86]}, {"code": "5.7", "name": "التحكم بالغطاء النباتي", "weight": 0.02, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2172.49, 2606.99, 3041.48, 3475.98, 3910.48, 4344.98, 4779.47, 5213.97, 5648.47, 6082.97, 6517.46, 6951.96, 7386.46, 7820.96, 8255.45, 8689.95, 9124.45, 9558.95, 9993.44, 10427.94, 10862.44, 11296.94, 11731.44, 12165.93, 12600.43, 13034.93, 13469.43, 13903.92, 14338.42, 14772.92, 15207.42, 15641.91, 16076.41, 16510.91, 16945.41, 17379.9, 17379.9]}, {"code": "5.8", "name": "اللوحات الإرشادية والتحذيرية", "weight": 0.025, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2715.61, 3258.73, 3801.85, 4344.98, 4888.1, 5431.22, 5974.34, 6517.46, 7060.59, 7603.71, 8146.83, 8689.95, 9233.07, 9776.2, 10319.32, 10862.44, 11405.56, 11948.68, 12491.81, 13034.93, 13578.05, 14121.17, 14664.29, 15207.42, 15750.54, 16293.66, 16836.78, 17379.9, 17923.03, 18466.15, 19009.27, 19552.39, 20095.51, 20638.64, 21181.76, 21724.88, 21724.88]}, {"code": "5.9", "name": "العلامات الأرضية", "weight": 0.03, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3258.73, 3910.48, 4562.22, 5213.97, 5865.72, 6517.46, 7169.21, 7820.96, 8472.7, 9124.45, 9776.2, 10427.94, 11079.69, 11731.44, 12383.18, 13034.93, 13686.67, 14338.42, 14990.17, 15641.91, 16293.66, 16945.41, 17597.15, 18248.9, 18900.65, 19552.39, 20204.14, 20855.88, 21507.63, 22159.38, 22811.12, 23462.87, 24114.62, 24766.36, 25418.11, 26069.86, 26069.86]}, {"code": "5.10", "name": "الحواجز ووسائل الحماية", "weight": 0.025, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2715.61, 3258.73, 3801.85, 4344.98, 4888.1, 5431.22, 5974.34, 6517.46, 7060.59, 7603.71, 8146.83, 8689.95, 9233.07, 9776.2, 10319.32, 10862.44, 11405.56, 11948.68, 12491.81, 13034.93, 13578.05, 14121.17, 14664.29, 15207.42, 15750.54, 16293.66, 16836.78, 17379.9, 17923.03, 18466.15, 19009.27, 19552.39, 20095.51, 20638.64, 21181.76, 21724.88, 21724.88]}, {"code": "5.11", "name": "حرم الطريق ومستخدمي الطرق بدون مركبات", "weight": 0.035, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3801.85, 4562.22, 5322.6, 6082.97, 6843.34, 7603.71, 8364.08, 9124.45, 9884.82, 10645.19, 11405.56, 12165.93, 12926.3, 13686.67, 14447.05, 15207.42, 15967.79, 16728.16, 17488.53, 18248.9, 19009.27, 19769.64, 20530.01, 21290.38, 22050.75, 22811.12, 23571.49, 24331.87, 25092.24, 25852.61, 26612.98, 27373.35, 28133.72, 28894.09, 29654.46, 30414.83, 30414.83]}, {"code": "5.12", "name": "السياج", "weight": 0.025, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2715.61, 3258.73, 3801.85, 4344.98, 4888.1, 5431.22, 5974.34, 6517.46, 7060.59, 7603.71, 8146.83, 8689.95, 9233.07, 9776.2, 10319.32, 10862.44, 11405.56, 11948.68, 12491.81, 13034.93, 13578.05, 14121.17, 14664.29, 15207.42, 15750.54, 16293.66, 16836.78, 17379.9, 17923.03, 18466.15, 19009.27, 19552.39, 20095.51, 20638.64, 21181.76, 21724.88, 21724.88]}, {"code": "5.13", "name": "دوريات مراقبة الطرق", "weight": 0.04, "rate": 0.02, "allowed": 14, "target": 0.8, "fixed": 0, "a": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4344.98, 5213.97, 6082.97, 6951.96, 7820.96, 8689.95, 9558.95, 10427.94, 11296.94, 12165.93, 13034.93, 13903.92, 14772.92, 15641.91, 16510.91, 17379.9, 18248.9, 19117.89, 19986.89, 20855.88, 21724.88, 22593.88, 23462.87, 24331.87, 25200.86, 26069.86, 26938.85, 27807.85, 28676.84, 29545.84, 30414.83, 31283.83, 32152.82, 33021.82, 33890.81, 34759.81, 34759.81]}]};
+const RATES = [0, 0, 0.05, 0.10, 0.15, 0.20];
+const RNAME = ["", "الشهر الأول", "الشهر الثاني", "الشهر الثالث", "الشهر الرابع", "الشهر الخامس"];
+const MONTHS = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+const KEY = "ncr_calc_506_v2";
+const fmt = n => Math.round(n).toLocaleString("en-US");
+const fmt2 = n => n.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const pct = n => (n * 100).toFixed(3) + "%";
+
+function periodOf(d) { let y = d.getFullYear(), m = d.getMonth(); if (d.getDate() < 20) { m--; if (m < 0) { m = 11; y--; } } return {y, m}; }
+function nextPeriod(p) { return p.m === 11 ? {y: p.y + 1, m: 0} : {y: p.y, m: p.m + 1}; }
+function samePeriod(a, b) { return a && b && a.y === b.y && a.m === b.m; }
+function periodShort(p) { const e = nextPeriod(p); return `${MONTHS[e.m]} ${e.y}`; }
+function periodLabel(p) { const e = nextPeriod(p); return `${MONTHS[e.m]} ${e.y} — من ⁦20/${p.m + 1}/${p.y}⁩ إلى ⁦19/${e.m + 1}/${e.y}⁩`; }
+function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch (e) { return false; } }
+let S = load();
+const fresh = !S.period;
+if (!S.period) S.period = periodOf(new Date());
+if (!Array.isArray(S.history)) S.history = [];
+S.over = S.over || {}; S.fixed = S.fixed || {};
+if (fresh && !S.draft && samePeriod(S.period, D.cur_period)) S.draft = Object.fromEntries(Object.entries(D.cur).map(([c, n]) => [c, String(n)]));
+S.draft = S.draft || {};
+
+function prevRepeat(code) {
+  if (S.history.length) return (S.history[S.history.length - 1].rep || {})[code] || 0;
+  return D.base[code] || 0;
+}
+const amountFor = (p, n) => p.a[Math.min(n, p.a.length - 1)];
+
+const list = document.getElementById("list"), items = [];
+D.pis.forEach((p, idx) => {
+  const el = document.createElement("div"); el.className = "pi";
+  el.innerHTML = `
+    <div class="row">
+      <span class="code">${p.code}</span>
+      <div class="name"><b>${p.name}</b><span class="st"></span></div>
+      <div class="step">
+        <button type="button" data-d="-1" aria-label="إنقاص ${p.code}">−</button>
+        <input type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="${idx < D.pis.length - 1 ? "next" : "done"}" placeholder="0" aria-label="عدد NCR للمؤشر ${p.code}">
+        <button type="button" data-d="1" aria-label="زيادة ${p.code}">+</button>
+      </div>
+    </div>
+`;
+  list.appendChild(el);
+  const it = {p, el, inp: el.querySelector(".step input"), fx: null};
+  items.push(it);
+  if (S.draft[p.code] !== undefined) it.inp.value = S.draft[p.code];
+  if (it.fx && S.fixed[p.code]) it.fx.value = S.fixed[p.code];
+  el.querySelectorAll(".step button").forEach(b => b.onclick = () => {
+    it.inp.value = Math.max(0, (Number(it.inp.value) || 0) + Number(b.dataset.d)); calc();
+  });
+  it.inp.addEventListener("input", calc);
+  it.inp.addEventListener("focus", () => it.inp.select());
+  it.inp.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); const nx = items[idx + 1]; if (nx) nx.inp.focus(); else it.inp.blur(); }
+  });
+});
+
+function rowResult(it) {
+  const {p} = it;
+  const filled = it.inp.value !== "";
+  const n = Math.max(0, Math.floor(Number(it.inp.value) || 0));
+  const ded = filled ? amountFor(p, n) : 0;
+  const fails = ded > 0;
+  const autoRep = fails ? Math.min(5, prevRepeat(p.code) + 1) : 0;
+  const rep = fails ? (S.over[p.code] ?? autoRep) : 0;
+  const pen = RATES[rep] * p.weight * D.lump;
+  const cases = it.fx ? Math.max(0, Math.floor(Number(it.fx.value) || 0)) : 0;
+  const fix = cases * (p.fixed || 0);
+  return {n, filled, ded, fails, autoRep, rep, pen, fix, cases, score: Math.max(0, 1 - n * p.rate)};
+}
+
+function calc() {
+  let tDed = 0, tPen = 0, tFix = 0, ncr = 0, hit = 0;
+  S.draft = {}; S.fixed = {};
+  for (const it of items) {
+    const {p, el} = it, r = rowResult(it);
+    S.draft[p.code] = it.inp.value; if (r.cases) S.fixed[p.code] = r.cases;
+    tDed += r.ded; tPen += r.pen; tFix += r.fix; ncr += r.n; if (r.fails) hit++;
+    const left = p.allowed - r.n, sum = r.ded + r.pen + r.fix;
+    el.classList.toggle("hit", sum > 0);
+    el.classList.toggle("near", sum === 0 && r.filled && left <= 2);
+    el.querySelector(".st").textContent = sum > 0 ? `يُحسم ${fmt(sum)} ر.س`
+      : !r.filled ? `المسموح ${p.allowed}` : left === 0 ? "الملاحظة التالية تبدأ الخصم" : `متبقٍّ ${left} قبل الخصم`;
+  }
+  const total = tDed + tPen + tFix;
+  document.getElementById("tot").textContent = fmt2(total) + " ر.س";
+  document.getElementById("tDed").textContent = fmt(tDed);
+  document.getElementById("tPen").textContent = fmt(tPen);
+  document.getElementById("totmeta").textContent = `${pct(total / D.lump)} من المقطوع · ${ncr} NCR · ${hit} مؤشر عليه خصم`;
+  save();
+}
+
+function renderPeriod() { const el = document.getElementById("period"); el.textContent = periodShort(S.period); el.title = periodLabel(S.period); }
+function renderHistory() {
+  const box = document.getElementById("hist"); document.getElementById("histbox").hidden = !S.history.length; box.innerHTML = "";
+  for (const h of [...S.history].reverse()) {
+    const fails = Object.keys(h.rep || {}).map(c => `PI ${c} (${RNAME[h.rep[c]]})`).join("، ");
+    const r = document.createElement("div"); r.className = "hrow";
+    r.innerHTML = `<div><b>${periodLabel(h.period)}</b><small>${h.ncr} NCR · ${fails ? "فشل: " + fails : "بلا خصم"}</small></div>
+      <div class="v">${fmt2(h.total)} ر.س<small>خصم ${fmt(h.ded)} · غرامات ${fmt(h.pen + h.fix)}</small></div>`;
+    box.appendChild(r);
+  }
+}
+function toast(m) { const t = document.getElementById("toast"); t.textContent = m; t.hidden = false; window.scrollTo({top: 0, behavior: "smooth"}); setTimeout(() => t.hidden = true, 6000); }
+
+document.getElementById("reset").onclick = () => {
+  if (!confirm("تصفير كل الخانات؟")) return;
+  items.forEach(it => { it.inp.value = ""; if (it.fx) it.fx.value = ""; }); S.over = {}; calc();
+};
+document.getElementById("fromApp").onclick = () => {
+  items.forEach(it => { const n = D.cur[it.p.code]; it.inp.value = n ? String(n) : ""; });
+  S.over = {}; calc(); toast(`تم تحميل أرقام الواجهة (${D.cur_at}).`);
+};
+document.getElementById("lock").onclick = () => {
+  const counts = {}, rep = {}; let ded = 0, pen = 0, fix = 0, ncr = 0;
+  for (const it of items) { const r = rowResult(it); counts[it.p.code] = r.n; ded += r.ded; pen += r.pen; fix += r.fix; ncr += r.n; if (r.fails) rep[it.p.code] = r.rep; }
+  const total = ded + pen + fix, label = periodLabel(S.period);
+  if (!confirm(`تثبيت ${label}؟\n${ncr} NCR — الإجمالي ${fmt2(total)} ر.س\n(خصم ${fmt2(ded)} + غرامات ${fmt2(pen + fix)})\nبعدها تُصفَّر الخانات ويبدأ الشهر التالي.`)) return;
+  S.history.push({period: S.period, counts, rep, ded, pen, fix, total: Math.round(total * 100) / 100, ncr, locked_at: new Date().toISOString()});
+  S.period = nextPeriod(S.period); S.over = {};
+  items.forEach(it => { it.inp.value = ""; if (it.fx) it.fx.value = ""; });
+  calc(); renderPeriod(); renderHistory();
+  toast(save() ? `تم تثبيت ${label}. ابدأ إدخال ${periodLabel(S.period)}.` : "تم التثبيت لهذه الجلسة فقط — المتصفح لا يسمح بالحفظ.");
+};
+
+
+renderPeriod(); renderHistory(); calc();
+</script>
+<script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script>
+</body>
+</html>
