@@ -247,10 +247,17 @@ function renderHistory() {
 function toast(m) { const t = document.getElementById("toast"); t.textContent = m; t.hidden = false; window.scrollTo({top: 0, behavior: "smooth"}); setTimeout(() => t.hidden = true, 6000); }
 
 // 10/11: بدل التصفير — الرجوع للأرقام الحالية (الحسبة الحية) بعد أي تعديل يدوي
+// 10/11: بلا نافذة تأكيد (متصفح واتساب الداخلي يخفيها فلا يعمل الزر)، ويرجع دائماً لشهر الواجهة الحالي —
+// إن ثُبّت الشهر الحالي بالخطأ يُلغى ذلك التثبيت ويعود الشهر نفسه بأرقامه الحية.
+const periodNum = p => p.y * 12 + p.m;
 document.getElementById("reset").onclick = () => {
-  if (!confirm("الرجوع إلى الأرقام الحالية وإلغاء تعديلاتك؟")) return;
-  const live = samePeriod(S.period, D.cur_period) ? D.cur : {};
-  items.forEach(it => { const n = live[it.p.code]; it.inp.value = n ? String(n) : ""; if (it.fx) it.fx.value = ""; });
+  const cur = D.cur_period;
+  if (cur && periodNum(S.period) !== periodNum(cur)) {
+    S.history = S.history.filter(h => periodNum(h.period) < periodNum(cur));
+    S.period = {y: cur.y, m: cur.m};
+    renderPeriod(); renderHistory();
+  }
+  items.forEach(it => { const n = D.cur[it.p.code]; it.inp.value = n ? String(n) : ""; if (it.fx) it.fx.value = ""; });
   S.over = {}; S.cur_key = D.cur_key; calc();
   toast("تمت العودة إلى الأرقام الحالية.");
 };
